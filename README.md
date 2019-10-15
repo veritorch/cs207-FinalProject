@@ -3,8 +3,6 @@ Final Project Code
 
 Group Number: 9
 
-Testing of rules
-
 Names:
 - Yixing Guan
 - Yinan Shen
