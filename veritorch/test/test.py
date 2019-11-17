@@ -1,3 +1,5 @@
+import sys
+sys.path.append('../')
 import veritorch.veritorch as vt
 import numpy as np
 import math
