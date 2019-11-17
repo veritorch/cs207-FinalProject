@@ -149,7 +149,7 @@ def test_arcsin():
     x1=sol.create_variable(0.5)
     x2=sol.create_variable(0.1)
     f = np.arcsin(x1) + np.arcsin(x2)
-    assert f.x == 0.6237661967598587, "error with arcsin"
+    assert abs(f.x - 0.6237661967598587)<1e-8, "error with arcsin"
     assert ((f.dx - np.array([1.15470054, 1.00503782])) < 10**(-8)).sum() == 2, "error with arcsin"
 
 def test_arccos():
@@ -157,7 +157,7 @@ def test_arccos():
     x1=sol.create_variable(0.5)
     x2=sol.create_variable(0.1)
     f = np.arccos(x1) + np.arccos(x2)
-    assert f.x == 2.5178264568299342, "error with arccos"
+    assert abs(f.x - 2.5178264568299342)<1e-8, "error with arccos"
     assert ((f.dx - np.array([-1.15470054, -1.00503782])) < 10**(-8)).sum() == 2, "error with arccos"
 
 def test_arctan():
@@ -165,7 +165,7 @@ def test_arctan():
     x1=sol.create_variable(0.5)
     x2=sol.create_variable(0.1)
     f = np.arctan(x1) + np.arctan(x2)
-    assert f.x == 0.5633162614919682, "error with arctan"
+    assert abs(f.x - 0.5633162614919682)<1e-8, "error with arctan"
     assert ((f.dx - np.array([0.8, 0.99009901])) < 10**(-8)).sum() == 2, "error with arctan"
 
 def test_over_create():
