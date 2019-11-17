@@ -1,16 +1,16 @@
-from veritorch.veritorch import Solver, Variable
+import veritorch.veritorch as vt
 import numpy as np
 import math
 import pytest
 
 def test_neg():
-    sol=Solver(3)
+    sol=vt.Solver(3)
     x1=sol.create_variable(4)
     assert (-x1).x == -4, "error with neg"
     assert ((-x1).dx == np.array([-1,0,0])).all(), "error with neg"
 
 def test_add():
-    sol=Solver(3)
+    sol=vt.Solver(3)
     x1=sol.create_variable(4)
     x2=sol.create_variable(5)
     x3=sol.create_variable(6)
@@ -19,7 +19,7 @@ def test_add():
     assert (f.dx == np.array([1,1,1])).all(), "error with add"
 
 def test_radd():
-    sol=Solver(3)
+    sol=vt.Solver(3)
     x1=sol.create_variable(4)
     x2=sol.create_variable(5)
     x3=sol.create_variable(6)
@@ -28,7 +28,7 @@ def test_radd():
     assert (f.dx == np.array([0,1,1])).all(), "error with radd"
 
 def test_sub():
-    sol=Solver(3)
+    sol=vt.Solver(3)
     x1=sol.create_variable(4)
     x2=sol.create_variable(5)
     x3=sol.create_variable(6)
@@ -37,7 +37,7 @@ def test_sub():
     assert (f.dx == np.array([1,-1,0])).all(), "error with sub"
 
 def test_rsub():
-    sol=Solver(3)
+    sol=vt.Solver(3)
     x1=sol.create_variable(4)
     x2=sol.create_variable(5)
     x3=sol.create_variable(6)
@@ -46,7 +46,7 @@ def test_rsub():
     assert (f.dx == np.array([-1,0,-1])).all(), "error with rsub"
 
 def test_mul():
-    sol=Solver(3)
+    sol=vt.Solver(3)
     x1=sol.create_variable(4)
     x2=sol.create_variable(5)
     x3=sol.create_variable(6)
@@ -55,7 +55,7 @@ def test_mul():
     assert (f.dx == np.array([60., 48., 40.])).all(), "error with mul"
 
 def test_rmul():
-    sol=Solver(3)
+    sol=vt.Solver(3)
     x1=sol.create_variable(4)
     x2=sol.create_variable(5)
     x3=sol.create_variable(6)
@@ -64,7 +64,7 @@ def test_rmul():
     assert (f.dx == np.array([60., 48., 40.])).all(), "error with rmul"
 
 def test_truediv():
-    sol=Solver(3)
+    sol=vt.Solver(3)
     x1=sol.create_variable(4)
     x2=sol.create_variable(5)
     x3=sol.create_variable(6)
@@ -82,7 +82,7 @@ def test_truediv():
     assert (f4.dx == np.array([-0.15625,  0.0625 ,  0.])).all(), "error with truediv"
 
 def test_rtruediv():
-    sol=Solver(3)
+    sol=vt.Solver(3)
     x1=sol.create_variable(4)
     x2=sol.create_variable(5)
     x3=sol.create_variable(6)
@@ -97,7 +97,7 @@ def test_rtruediv():
     assert (f3.dx == np.array([-0.21875, -0.     , -0.     ])).all(), "error with rtruediv"
 
 def test_pow():
-    sol=Solver(2)
+    sol=vt.Solver(2)
     x1=sol.create_variable(4)
     x2=sol.create_variable(5)
     f = (x1+x2) ** 2
@@ -105,7 +105,7 @@ def test_pow():
     assert (f.dx == np.array([18., 18.])).all(), "error with pow"
 
 def test_exp():
-    sol=Solver(2)
+    sol=vt.Solver(2)
     x1=sol.create_variable(0)
     x2=sol.create_variable(5)
     f = np.exp(x1) + x2
@@ -113,7 +113,7 @@ def test_exp():
     assert (f.dx == np.array([1., 1.])).all(), "error with exp"
 
 def test_log():
-    sol=Solver(2)
+    sol=vt.Solver(2)
     x1=sol.create_variable(10)
     x2=sol.create_variable(5)
     f = np.log(x1) + np.log(x2)
@@ -121,7 +121,7 @@ def test_log():
     assert (f.dx == np.array([0.1, 0.2])).all(), "error with log"
 
 def test_sin():
-    sol=Solver(2)
+    sol=vt.Solver(2)
     x1=sol.create_variable(math.pi/2)
     x2=sol.create_variable(math.pi/6)
     f = np.sin(x1) + np.sin(x2)
@@ -129,7 +129,7 @@ def test_sin():
     assert ((f.dx - np.array([6.12323400e-17, 8.66025404e-01])) < 10**(-8)).sum() == 2, "error with sin"
 
 def test_cos():
-    sol=Solver(2)
+    sol=vt.Solver(2)
     x1=sol.create_variable(math.pi/2)
     x2=sol.create_variable(math.pi/6)
     f = np.cos(x1) + np.cos(x2)
@@ -137,7 +137,7 @@ def test_cos():
     assert ((f.dx - np.array([-1.,-0.5])) < 10**(-8)).sum() == 2, "error with cos"
 
 def test_tan():
-    sol=Solver(2)
+    sol=vt.Solver(2)
     x1=sol.create_variable(math.pi/2)
     x2=sol.create_variable(math.pi/6)
     f = np.tan(x1) + np.tan(x2)
@@ -145,7 +145,7 @@ def test_tan():
     assert ((f.dx - np.array([2.66709379e+32, 1.33333333e+00])) < 10**(-8)).sum() == 2, "error with tan"
 
 def test_arcsin():
-    sol=Solver(2)
+    sol=vt.Solver(2)
     x1=sol.create_variable(0.5)
     x2=sol.create_variable(0.1)
     f = np.arcsin(x1) + np.arcsin(x2)
@@ -153,7 +153,7 @@ def test_arcsin():
     assert ((f.dx - np.array([1.15470054, 1.00503782])) < 10**(-8)).sum() == 2, "error with arcsin"
 
 def test_arccos():
-    sol=Solver(2)
+    sol=vt.Solver(2)
     x1=sol.create_variable(0.5)
     x2=sol.create_variable(0.1)
     f = np.arccos(x1) + np.arccos(x2)
@@ -161,7 +161,7 @@ def test_arccos():
     assert ((f.dx - np.array([-1.15470054, -1.00503782])) < 10**(-8)).sum() == 2, "error with arccos"
 
 def test_arctan():
-    sol=Solver(2)
+    sol=vt.Solver(2)
     x1=sol.create_variable(0.5)
     x2=sol.create_variable(0.1)
     f = np.arctan(x1) + np.arctan(x2)
@@ -169,7 +169,7 @@ def test_arctan():
     assert ((f.dx - np.array([0.8, 0.99009901])) < 10**(-8)).sum() == 2, "error with arctan"
 
 def test_over_create():
-    sol=Solver(1)
+    sol=vt.Solver(1)
     x1=sol.create_variable(1)
     with pytest.raises(Exception):
         x2=sol.create_variable(2)

@@ -4,7 +4,7 @@ python:
 before_install:
     - pip install pytest pytest-cov
     - pip install codecov
-    - export PYTHONPATH=$PYTHONPATH:$(pwd)
+    - python setup.py install
 script:
     - pytest ./veritorch/test/test.py --cov --cov-report term-missing
 after_success:
