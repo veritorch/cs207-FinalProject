@@ -1,4 +1,4 @@
-import veritorch.Veritorch as vt
+import veritorch.veritorch as vt
 import numpy as np
 import math
 import pytest
