@@ -4,6 +4,7 @@ python:
 before_install:
     - pip install pytest pytest-cov
     - pip install codecov
+    - pip install -e
 script:
     - pytest ./veritorch/test/test.py --cov --cov-report term-missing
 after_success:
