@@ -1,6 +1,3 @@
-import sys
-sys.path.append('../')
-import veritorch
 from veritorch import Solver, Variable
 import numpy as np
 import math
