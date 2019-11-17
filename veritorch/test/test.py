@@ -1,6 +1,7 @@
 import sys
 sys.path.append('../')
-from Veritorch import Solver, Variable
+import veritorch
+from veritorch import Solver, Variable
 import numpy as np
 import math
 import pytest
