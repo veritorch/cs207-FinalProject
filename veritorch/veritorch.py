@@ -15,18 +15,10 @@ import numpy as np
 class Solver():
   
   def __init__(self, n):
-    self.n = n 
-    # NOTE (see more in NOTE under def get_variable): what's the use of this? 
-    # We find this to be not very useful (other than using len in create_variable, 
-    # in which case better to just use a counter variable rather than a list that takes more memory)
+    self.n = n
     self.independent_variable_list = []   
     
-  def create_variable(self, x):  
-    # NOTE: we deleted "dx=1" - PLEASE UPDATE DOCUMENTATION, 
-    # since presumably create_variable only takes x as a number, and user never know the derivative at x (otherwise why use our package?)
-    
-    # check num of variables created is <= n, if so, append to the list; else raise exception
-      
+  def create_variable(self, x):
     der = np.zeros(self.n)
     der[len(self.independent_variable_list)] = 1
     var = Variable(x, der)
@@ -38,19 +30,11 @@ class Solver():
       
     return var
   
-  def get_variable(self, idx):  
-    # NOTE: again, don't see the point this method (from both user's and dev's perspectives). 
-    # For user: they may not remember the sequence of create_variable, which is the sequence in independent_variable_list.
-    # even if they do, why would they use this method?
-    # For dev: don't see where this could be used. Shuying mentioned that you might use this in merge method.
-    # if this is the only use, please make this private. But I don't see how merge method needs this. 
-    # You can always retrieve value of a variable by calling var.x (or get method in Variable class). This avoids index confusion
-    # aka the need to remember user input sequence.
+  def get_variable(self, idx):
     stored_var = self.independent_variable_list[idx]
     return Variable(stored_var.x, stored_var.dx)
   
   def merge(self, *args):
-    # we don't need to implement this for a scalar function
     pass 
   
   def __repr__(self):
@@ -599,7 +583,7 @@ class Variable():
     >>> import veritorch as vt
     >>> sol = vt.Solver(2)
     >>> x1 = sol.create_variable(0)
-    >>> v = np.arcsin(x1)
+    >>> v = np.arccos(x1)
     >>> print(v)
     Variable(1.5707963267948966, [-1. -0.])
     """
