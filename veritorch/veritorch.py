@@ -583,7 +583,7 @@ class Variable():
     >>> import veritorch as vt
     >>> sol = vt.Solver(2)
     >>> x1 = sol.create_variable(0)
-    >>> v = np.arcsin(x1)
+    >>> v = np.arccos(x1)
     >>> print(v)
     Variable(1.5707963267948966, [-1. -0.])
     """

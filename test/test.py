@@ -173,3 +173,44 @@ def test_over_create():
     x1=sol.create_variable(1)
     with pytest.raises(Exception):
         x2=sol.create_variable(2)
+
+def test_get_variable():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(1)
+    x1=sol.get_variable(0)
+
+def test_str():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(1)
+    print(x1)
+
+def test_divide_by_zero():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(1)
+    with pytest.raises(ValueError):
+        x2=x1/0
+
+def test_divide_by_zero_variable():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(1)
+    x2=sol.create_variable(0)
+    with pytest.raises(ValueError):
+        f=x1/x2
+
+def test_rtruediv_by_zero():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(0)
+    with pytest.raises(ValueError):
+        f=1.5/x1
+
+def test_arcsin_out_of_range():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(10)
+    with pytest.raises(ValueError):
+        f=np.arcsin(x1)
+
+def test_arccos_out_of_range():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(10)
+    with pytest.raises(ValueError):
+        f=np.arccos(x1)
