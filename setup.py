@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="veritorch", # Replace with your own username
-    version="0.0.2",
+    version="0.0.3",
     author="Yixing Guan, Yinan Shen, Shuying Ni, Banruo(Rock) Zhou",
     author_email="yixingguan@fas.harvard.edu, yinanshen@g.harvard.edu, shuying_ni@g.harvard.edu, bzhou@g.harvard.edu",
     description="autodifferentiation package, supporting forward mode only right now",
