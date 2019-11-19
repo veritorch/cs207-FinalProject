@@ -1,4 +1,6 @@
 import numpy as np
+
+class Solver():
 # Solver class
 # This class takes as an input the number of independent variables that the function  𝑓  has and tracks how many independent variables we have already created so far.
 
@@ -11,8 +13,6 @@ import numpy as np
 # create_variable(x, dx=1): return an independent variable with value initialized to x and derivative initialized to dx. A copy of this independent variable will also be added to the independent_variable_list.
 # get_variable(idx): return the copy of the  𝑖𝑡ℎ  independent variable stored in the independent_variable_list
 # merge(*args): *args should be a list of variables  [𝑓1,𝑓2,...,𝑓𝑚] . This function returns the m by n jacobian matrix of  𝑓=[𝑓1,𝑓2,...,𝑓𝑚] .
-
-class Solver():
   
   def __init__(self, n):
     self.n = n
@@ -44,15 +44,14 @@ class Solver():
     pass
 
   
+class Variable():
 # This class takes as inputs the initial value  𝑥  and derivative  𝑑𝑥  (optional, set to 1 by default) and includes methods to overload basic arithmic operators for the veritorch package.
 
 # It has the following attributes:
 
 # x: the current scalar value of this variable
 # dx: the current derivative of this variable, which should be a vector of length n, where n is the number of independent variables of the function  𝑓  whose derivative is being evaluated.
-class Variable():
-  # User can ONLY create instance of Variable class through Solver.create_variable method.
-  # NOT to be used directly - IS THIS TRUE?
+
   def __init__(self, x, dx = None):
     """ 
     Initiate Variable object.
