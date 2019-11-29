@@ -34,6 +34,9 @@ class Solver():
         stored_var = self.independent_variable_list[idx]
         return Variable(stored_var.x, stored_var.dx)
 
+    def merge(self, d_list):
+    	return np.stack(d_list, axis=0)
+
     def get_diff(self, f, x):
         #check arguments of f
         sig = signature(f)
@@ -51,12 +54,11 @@ class Solver():
             dans=[]
             for i in range(len(ans)):
                 dans.append(ans[i].dx)
-            return np.stack(dans, axis=0)
+            self.independent_variable_list=[]
+            return self.merge(dans)
         else:
+            self.independent_variable_list=[]
             return ans[0].dx
-    
-    def merge(self, d_list):
-    	return np.stack(d_list, axis=0)
 
     def __repr__(self):
         pass

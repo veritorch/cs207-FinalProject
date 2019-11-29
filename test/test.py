@@ -3,13 +3,44 @@ import numpy as np
 import math
 import pytest
 
-def test_get_diff_scalar():
+def test_get_diff_scalar_to_scalar():
     sol=vt.Solver(1)
-    print(dir(sol))
     def f(x):
         return [x*x]
     dx=sol.get_diff(f,[1])
     assert (dx==np.array([2])).all()
+
+def test_get_diff_vector_to_scalar():
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [x*y]
+    dx=sol.get_diff(f,[1,2])
+    assert (dx==np.array([2,1])).all()
+
+def test_get_diff_scalar_to_vector():
+    sol=vt.Solver(1)
+    def f(x):
+        return [x*x*x, 4*x]
+    dx=sol.get_diff(f,[2])
+    assert (dx==np.array([[12],[4]])).all()
+
+def test_get_diff_vector_to_vector():
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [x*y, x+y]
+    dx=sol.get_diff(f,[1,2])
+    assert (dx==np.array([[2,1],[1,1]])).all()
+
+def test_get_diff_continuous_usage():
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [x*y]
+    def g(x,y):
+        return [x**3, 4*x]
+    dx=sol.get_diff(f,[1,2])
+    assert (dx==np.array([2,1])).all()
+    dx=sol.get_diff(g,[2,1])
+    assert (dx==np.array([[12,0],[4,0]])).all()
 
 def test_neg():
     sol=vt.Solver(3)
@@ -223,8 +254,3 @@ def test_arccos_out_of_range():
     with pytest.raises(ValueError):
         f=np.arccos(x1)
 
-def active_test():
-    test_get_diff_scalar()
-    test_add()
-
-active_test()
