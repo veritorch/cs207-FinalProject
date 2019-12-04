@@ -770,7 +770,7 @@ class Variable():
 
         Parameters
         =======
-        Variable object (self) and a float/int number as the base
+        Variable object (self) and the float/int number a as the base
 
         Returns
         =======
@@ -784,7 +784,7 @@ class Variable():
         >>> import veritorch as vt
         >>> sol = vt.Solver(2)
         >>> x1 = sol.create_variable(5)
-        >>> v = np.exponential(x1, 2)
+        >>> v = x1.exponential(2)
         >>> print(v)
         Variable(32, [22.1807098   0.       ])
         """
@@ -810,7 +810,7 @@ class Variable():
         =======
         Variable object with
         - x attribute is updated based on: sinh(x) = (exp(x) - exp(-x)) * 1/2
-        - dx attribute is updated as cosh(x)
+        - dx attribute is updated based on the chain rule: cosh(x) * x'
 
         Examples
         =======
@@ -819,7 +819,7 @@ class Variable():
         >>> import math
         >>> sol = vt.Solver(2)
         >>> x1 = sol.create_variable(2)
-        >>> v = np.sinh(x1)
+        >>> v = x1.sinh()
         >>> print(v)
         Variable(3.6268604, [3.7621957 0. ])
         """
@@ -841,7 +841,7 @@ class Variable():
         =======
         Variable object with
         - x attribute is updated based on: cosh(x) = (exp(x) + exp(-x)) * 1/2
-        - dx attribute is updated as: sinh(x)
+        - dx attribute is updated based on the chain rule: sinh(x) * x'
 
         Examples
         =======
@@ -850,7 +850,7 @@ class Variable():
         >>> import math
         >>> sol = vt.Solver(2)
         >>> x1 = sol.create_variable(2)
-        >>> v = np.sinh(x1)
+        >>> v = x1.sinh()
         >>> print(v)
         Variable(3.7621957, [3.6268604 0. ])
         """
@@ -873,7 +873,7 @@ class Variable():
         =======
         Variable object with
         - x attribute is updated based on: tanh(x) = sinh(x) / cosh(x)
-        - dx attribute is updated as: 1 / cosh(x) ** 2
+        - dx attribute is updated based on the chain rule: 1 / cosh(x) ** 2 * x'
 
         Examples
         =======
@@ -882,7 +882,7 @@ class Variable():
         >>> import math
         >>> sol = vt.Solver(2)
         >>> x1 = sol.create_variable(2)
-        >>> v = np.tanh(x1)
+        >>> v = x1.tanh(x1)
         >>> print(v)
         Variable(0.9640276, [0.0706508 0. ])
         """
@@ -903,7 +903,7 @@ class Variable():
         =======
         Variable object with
         - x attribute is updated based on: 1 / (1 + exp(-x))
-        - dx attribute is updated as: (1 − logistic(x)) * logistic(x)
+        - dx attribute is updated based on the chain rule: (1 − x) * x * x'
 
         Examples
         =======
@@ -911,7 +911,7 @@ class Variable():
         >>> import veritorch as vt
         >>> sol = vt.Solver(2)
         >>> x1 = sol.create_variable(2)
-        >>> v = logistic(x1)
+        >>> v = x1.logistic()
         >>> print(v)
         Variable(0.8807971, [0.1049936   0.       ])
         """
@@ -924,7 +924,7 @@ class Variable():
 
     def logarithm(self, a):
         """
-        Returns the log of Variable object given any base a.
+        Returns the logarithm of Variable object given any base a.
 
         Parameters
         =======
@@ -934,7 +934,7 @@ class Variable():
         =======
         Variable object with
         - x attribute is updated based on: log(x) / log(a)
-        - dx attribute is updated based on chain rule: (1 / x) * (1 / log(a))
+        - dx attribute is updated based on chain rule: (1 / x) * (1 / log(a)) * x'
 
         Examples
         =======
@@ -942,7 +942,7 @@ class Variable():
         >>> import veritorch as vt
         >>> sol = vt.Solver(2)
         >>> x1 = sol.create_variable(3)
-        >>> v = logarithm(x1, 2)
+        >>> v = x1.logarithm(2)
         >>> print(v)
         Variable(1.5849625, [0.4808983 0. ])
         """
@@ -962,7 +962,7 @@ class Variable():
         =======
         Variable object with
         - x attribute is updated based on: x ** (1/2)
-        - dx attribute is updated based on chain rule: (1/2) * (x) ** (-1/2)
+        - dx attribute is updated based on chain rule: (1/2) * (x) ** (-1/2) * x'
 
         Examples
         =======
@@ -970,7 +970,7 @@ class Variable():
         >>> import veritorch as vt
         >>> sol = vt.Solver(2)
         >>> x1 = sol.create_variable(5)
-        >>> v = np.sqrt(x1)
+        >>> v = x1.sqrt()
         >>> print(v)
         Variable(2.2360680, [0.2236068   0.       ])
         """
