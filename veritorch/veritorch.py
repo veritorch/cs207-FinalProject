@@ -706,6 +706,66 @@ class Variable():
         val = np.arctan(self.x)
         der = 1/(1+self.x**2) * self.dx
         return Variable(val, der)
+    
+    def __eq__(self, other):
+        """
+        Return true if two Variable objects (or one Variable object and one float/int number) are equal.
+
+        Parameters
+        =======
+        Variable object (self)
+        Variable object (other) OR float/int (other)
+
+        Returns
+        =======
+        true: if they are equal
+        false: if they are not equal
+
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> sol = vt.Solver(2)
+        >>> x1 = sol.create_variable(4)
+        >>> x2 = sol.create_variable(5)
+        >>> v = x1 == x2
+        >>> print(v)
+        false
+        """
+        try:
+            return self.x == other.x
+        except AttributeError:
+            return self.x == other
+
+    def __ne__(self, other):
+        """
+        Return true if two Variable objects (or one Variable object and one float/int number) are not equal.
+
+        Parameters
+        =======
+        Variable object (self)
+        Variable object (other) OR float/int (other)
+
+        Returns
+        =======
+        true: if they are not equal
+        false: if they are equal
+
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> sol = vt.Solver(2)
+        >>> x1 = sol.create_variable(4)
+        >>> x2 = sol.create_variable(5)
+        >>> v = x1 == x2
+        >>> print(v)
+        true
+        """
+        try:
+            return self.x != other.x
+        except AttributeError:
+            return self.x != other
 
 class Variable_b():
     

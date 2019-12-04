@@ -294,6 +294,17 @@ def test_arccos_out_of_range():
     with pytest.raises(ValueError):
         f=np.arccos(x1)
 
+def test_equal():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(4)
+    x2=sol.create_variable(4)
+    assert x1==x2, "error with eq"
+
+def test_notequal():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(4)
+    x2=sol.create_variable(5)
+    assert x1!=x2, "error with eq"
 
 #test backward mode variable
 def testb_neg():
