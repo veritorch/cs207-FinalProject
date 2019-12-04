@@ -60,7 +60,7 @@ class Solver():
         for i in range(self.n):
             self.create_variable(x[i])
         ans=f(*self.independent_variable_list)
-        if(len(ans)<=0):
+        if(ans is None or len(ans)<=0):
             raise TypeError("# of outputs of f <= 0")
         elif(len(ans)>1):
             dans=[]
@@ -709,7 +709,7 @@ class Variable():
     
     def __eq__(self, other):
         """
-        Return true if two Variable objects (or one Variable object and one float/int number) are equal.
+        Return true if two Variable objects are equal(both value and derivative must match).
 
         Parameters
         =======
@@ -733,13 +733,13 @@ class Variable():
         false
         """
         try:
-            return self.x == other.x
+            return (self.x == other.x) and ((self.dx == other.dx).all())
         except AttributeError:
-            return self.x == other
+            return False
 
     def __ne__(self, other):
         """
-        Return true if two Variable objects (or one Variable object and one float/int number) are not equal.
+        Return true if two Variable objects are not equal.
 
         Parameters
         =======
@@ -762,10 +762,7 @@ class Variable():
         >>> print(v)
         true
         """
-        try:
-            return self.x != other.x
-        except AttributeError:
-            return self.x != other
+        return not self.__eq__(other)
 
 class Variable_b():
     

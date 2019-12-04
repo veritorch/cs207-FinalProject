@@ -3,85 +3,15 @@ import numpy as np
 import math
 import pytest
 
-def test_get_diff_scalar_to_scalar():
-    sol=vt.Solver(1)
-    def f(x):
-        return [x*x]
-    dx=sol.get_diff(f,[1])
-    assert (dx==np.array([2])).all()
-
-def test_get_diff_vector_to_scalar():
-    sol=vt.Solver(2)
-    def f(x,y):
-        return [x*y]
-    dx=sol.get_diff(f,[1,2])
-    assert (dx==np.array([2,1])).all()
-
-def test_get_diff_scalar_to_vector():
-    sol=vt.Solver(1)
-    def f(x):
-        return [x*x*x, 4*x]
-    dx=sol.get_diff(f,[2])
-    assert (dx==np.array([[12],[4]])).all()
-
-def test_get_diff_vector_to_vector():
-    sol=vt.Solver(2)
-    def f(x,y):
-        return [x*y, x+y]
-    dx=sol.get_diff(f,[1,2])
-    assert (dx==np.array([[2,1],[1,1]])).all()
-
-def test_get_diff_continuous_usage():
-    sol=vt.Solver(2)
-    def f(x,y):
-        return [x*y]
-    def g(x,y):
-        return [x**3, 4*x]
-    dx=sol.get_diff(f,[1,2])
-    assert (dx==np.array([2,1])).all()
-    dx=sol.get_diff(g,[2,1])
-    assert (dx==np.array([[12,0],[4,0]])).all()
-
-#test backward
-def testb_get_diff_scalar_to_scalar():
-    sol=vt.Solver(1)
-    def f(x):
-        return [x*x]
-    dx=sol.get_diff(f,[1],mode="backward")
-    assert (dx==np.array([2])).all()
-
-def testb_get_diff_vector_to_scalar():
-    sol=vt.Solver(2)
-    def f(x,y):
-        return [x*y]
-    dx=sol.get_diff(f,[1,2],mode="backward")
-    assert (dx==np.array([2,1])).all()
-
-def testb_get_diff_scalar_to_vector():
-    sol=vt.Solver(1)
-    def f(x):
-        return [x*x*x, 4*x]
-    dx=sol.get_diff(f,[2],mode="backward")
-    assert (dx==np.array([[12],[4]])).all()
-
-def testb_get_diff_vector_to_vector():
-    sol=vt.Solver(2)
-    def f(x,y):
-        return [x*y, x+y]
-    dx=sol.get_diff(f,[1,2],mode="backward")
-    assert (dx==np.array([[2,1],[1,1]])).all()
-
-def testb_get_diff_continuous_usage():
-    sol=vt.Solver(2)
-    def f(x,y):
-        return [x*y]
-    def g(x,y):
-        return [x**3, 4*x]
-    dx=sol.get_diff(f,[1,2],mode="backward")
-    assert (dx==np.array([2,1])).all()
-    dx=sol.get_diff(g,[2,1],mode="backward")
-    assert (dx==np.array([[12,0],[4,0]])).all()
-
+###################################
+#
+#
+#
+#    test forward mode
+#
+#
+#
+####################################
 def test_neg():
     sol=vt.Solver(3)
     x1=sol.create_variable(4)
@@ -295,18 +225,108 @@ def test_arccos_out_of_range():
         f=np.arccos(x1)
 
 def test_equal():
+    x1=vt.Variable(1,np.array([2,2]))
+    x2=vt.Variable(1,np.array([2,2]))
+    assert x1==x2, "error with eq"
+
+def test_equal_dx_mismatch():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(4) #dx=[1,0]
+    x2=sol.create_variable(4) #dx=[0,1]
+    assert not x1==x2, "error with eq"
+    
+def test_equal_type_mismatch():
     sol=vt.Solver(2)
     x1=sol.create_variable(4)
-    x2=sol.create_variable(4)
-    assert x1==x2, "error with eq"
+    assert not x1==4, "error with eq type mismatch"
 
 def test_notequal():
     sol=vt.Solver(2)
     x1=sol.create_variable(4)
     x2=sol.create_variable(5)
-    assert x1!=x2, "error with eq"
+    assert x1!=x2, "error with neq"
+    
+def test_notequal_mismatch():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(4)
+    assert x1!=4 , "error with neq type mismatch"
 
-#test backward mode variable
+def test_get_diff_scalar_to_scalar():
+    sol=vt.Solver(1)
+    def f(x):
+        return [x*x]
+    dx=sol.get_diff(f,[1])
+    assert (dx==np.array([2])).all()
+
+def test_get_diff_vector_to_scalar():
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [x*y]
+    dx=sol.get_diff(f,[1,2])
+    assert (dx==np.array([2,1])).all()
+
+def test_get_diff_scalar_to_vector():
+    sol=vt.Solver(1)
+    def f(x):
+        return [x*x*x, 4*x]
+    dx=sol.get_diff(f,[2])
+    assert (dx==np.array([[12],[4]])).all()
+
+def test_get_diff_vector_to_vector():
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [x*y, x+y]
+    dx=sol.get_diff(f,[1,2])
+    assert (dx==np.array([[2,1],[1,1]])).all()
+
+def test_get_diff_continuous_usage():
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [x*y]
+    def g(x,y):
+        return [x**3, 4*x]
+    dx=sol.get_diff(f,[1,2])
+    assert (dx==np.array([2,1])).all()
+    dx=sol.get_diff(g,[2,1])
+    assert (dx==np.array([[12,0],[4,0]])).all()
+
+def test_f_argument_length_not_match():
+    sol=vt.Solver(5)
+    def f(x):
+        return [x*x]
+    with pytest.raises(TypeError):
+        dx=sol.get_diff(f,[1,2,3,4,5])
+
+def test_supplied_argument_length_not_match():
+    sol=vt.Solver(5)
+    def f(a,b,c,d,e):
+        return [a*b*c*d*e]
+    with pytest.raises(IndexError):
+        dx=sol.get_diff(f,[1,2,3])
+
+def test_f_return_nothing():
+    sol=vt.Solver(5)
+    def f(a,b,c,d,e):
+        return []
+    with pytest.raises(TypeError):
+        dx=sol.get_diff(f,[1,2,3,4,5])
+        
+###################################
+#
+#
+#
+#    test backward mode
+#
+#
+#
+####################################
+def testb_str():
+    sol=vt.Solver(2)
+    x1=sol.create_variable_b(1)
+    print(x1)
+    x1.grad_value=1.0
+    print(x1)
+
 def testb_neg():
     x1=vt.Variable_b(4)
     a = -x1
@@ -413,6 +433,17 @@ def testb_truediv():
     assert x41.grad() == -0.15625, "error with truediv"
     assert x42.grad() == 0.0625, "error with truediv"
 
+def testb_truediv_by_zero():
+    x1=vt.Variable_b(4)
+    with pytest.raises(ValueError):
+        f=x1/0
+
+def testb_truediv_by_zero_variable():
+    x1=vt.Variable_b(4)
+    x2=vt.Variable_b(0)
+    with pytest.raises(ValueError):
+        f=x1/x2
+
 def testb_rtruediv():
     x1=vt.Variable_b(4)
     x2=vt.Variable_b(5)
@@ -429,6 +460,11 @@ def testb_rtruediv():
     assert f2.value == 0.25, "error with rtruediv"
     assert x21.grad() == -0.125, "error with rtruediv"
     assert x22.grad() == 0, "error with rtruediv"
+
+def testb_rtruediv_by_zero():
+    x1=vt.Variable_b(0)
+    with pytest.raises(ValueError):
+        f=1/x1
 
 def testb_pow():
     x1=vt.Variable_b(4)
@@ -510,3 +546,75 @@ def testb_arctan():
     assert abs(f.value - 0.5633162614919682) < 1e-8, "error with arctan"
     assert abs(x1.grad() - (0.8)) < 10**(-8), "error with arctan"
     assert abs(x2.grad() - (0.99009901)) < 10**(-8), "error with arctan"
+
+def test_arcsin_out_of_range():
+    sol=vt.Solver(2)
+    x1=sol.create_variable_b(10)
+    with pytest.raises(ValueError):
+        f=np.arcsin(x1)
+
+def test_arccos_out_of_range():
+    sol=vt.Solver(2)
+    x1=sol.create_variable_b(10)
+    with pytest.raises(ValueError):
+        f=np.arccos(x1)
+
+def testb_get_diff_scalar_to_scalar():
+    sol=vt.Solver(1)
+    def f(x):
+        return [x*x]
+    dx=sol.get_diff(f,[1],mode="backward")
+    assert (dx==np.array([2])).all()
+
+def testb_get_diff_vector_to_scalar():
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [x*y]
+    dx=sol.get_diff(f,[1,2],mode="backward")
+    assert (dx==np.array([2,1])).all()
+
+def testb_get_diff_scalar_to_vector():
+    sol=vt.Solver(1)
+    def f(x):
+        return [x*x*x, 4*x]
+    dx=sol.get_diff(f,[2],mode="backward")
+    assert (dx==np.array([[12],[4]])).all()
+
+def testb_get_diff_vector_to_vector():
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [x*y, x+y]
+    dx=sol.get_diff(f,[1,2],mode="backward")
+    assert (dx==np.array([[2,1],[1,1]])).all()
+
+def testb_get_diff_continuous_usage():
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [x*y]
+    def g(x,y):
+        return [x**3, 4*x]
+    dx=sol.get_diff(f,[1,2],mode="backward")
+    assert (dx==np.array([2,1])).all()
+    dx=sol.get_diff(g,[2,1],mode="backward")
+    assert (dx==np.array([[12,0],[4,0]])).all()
+
+def testb_f_argument_length_not_match():
+    sol=vt.Solver(5)
+    def f(x):
+        return [x*x]
+    with pytest.raises(TypeError):
+        dx=sol.get_diff(f,[1,2,3,4,5],mode="backward")
+
+def testb_supplied_argument_length_not_match():
+    sol=vt.Solver(5)
+    def f(a,b,c,d,e):
+        return [a*b*c*d*e]
+    with pytest.raises(IndexError):
+        dx=sol.get_diff(f,[1,2,3],mode="backward")
+
+def testb_f_return_nothing():
+    sol=vt.Solver(5)
+    def f(a,b,c,d,e):
+        return []
+    with pytest.raises(TypeError):
+        dx=sol.get_diff(f,[1,2,3,4,5],mode="backward")
