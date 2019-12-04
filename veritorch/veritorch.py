@@ -763,6 +763,223 @@ class Variable():
         true
         """
         return not self.__eq__(other)
+    
+    def exponential(self, a):
+        """
+        Returns the exponential of Variable object given any base a.
+
+        Parameters
+        =======
+        Variable object (self) and a float/int number as the base
+
+        Returns
+        =======
+        Variable object with
+        - x attribute is updated based on: a ** x
+        - dx attribute is updated based on chain rule: a'(x) = ln(a) * a**(x) * x'
+
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> sol = vt.Solver(2)
+        >>> x1 = sol.create_variable(5)
+        >>> v = np.exponential(x1, 2)
+        >>> print(v)
+        Variable(32, [22.1807098   0.       ])
+        """
+        val = a ** self.x
+        if a < 0:
+            raise ValueError("Cannot do derivative")
+        else:
+            der = np.log(a) * a ** self.x * self.dx
+        return Variable(val, der)
+
+
+    def sinh(self):
+        # NOTE: implementing elementary function within Variable class, for good style.
+        # PLEASE UPDATE documentation
+        """
+        Returns the sinh of Variable object.
+
+        Parameters
+        =======
+        Variable object (self)
+
+        Returns
+        =======
+        Variable object with
+        - x attribute is updated based on: sinh(x) = (exp(x) - exp(-x)) * 1/2
+        - dx attribute is updated as cosh(x)
+
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> sol = vt.Solver(2)
+        >>> x1 = sol.create_variable(2)
+        >>> v = np.sinh(x1)
+        >>> print(v)
+        Variable(3.6268604, [3.7621957 0. ])
+        """
+        val = (np.exp(self.x) - np.exp(-self.x)) * 1/2
+        der = np.cosh(self.x) * self.dx
+        return Variable(val, der)
+
+    def cosh(self):
+        # NOTE: implementing elementary function within Variable class, for good style.
+        # PLEASE UPDATE documentation
+        """
+        Returns the cosh of Variable object.
+
+        Parameters
+        =======
+        Variable object (self)
+
+        Returns
+        =======
+        Variable object with
+        - x attribute is updated based on: cosh(x) = (exp(x) + exp(-x)) * 1/2
+        - dx attribute is updated as: sinh(x)
+
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> sol = vt.Solver(2)
+        >>> x1 = sol.create_variable(2)
+        >>> v = np.sinh(x1)
+        >>> print(v)
+        Variable(3.7621957, [3.6268604 0. ])
+        """
+        val = (np.exp(self.x) + np.exp(-self.x)) * 1/2
+        der = np.sinh(self.x) * self.dx
+        return Variable(val, der)
+
+
+    def tanh(self):
+        # NOTE: implementing elementary function within Variable class, for good style.
+        # PLEASE UPDATE documentation
+        """
+        Returns the tanh of Variable object.
+
+        Parameters
+        =======
+        Variable object (self)
+
+        Returns
+        =======
+        Variable object with
+        - x attribute is updated based on: tanh(x) = sinh(x) / cosh(x)
+        - dx attribute is updated as: 1 / cosh(x) ** 2
+
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> sol = vt.Solver(2)
+        >>> x1 = sol.create_variable(2)
+        >>> v = np.tanh(x1)
+        >>> print(v)
+        Variable(0.9640276, [0.0706508 0. ])
+        """
+        val = np.sinh(self.x) / np.cosh(self.x)
+        der = 1 / np.cosh(self.x) ** 2 * self.dx
+        return Variable(val, der)
+
+
+    def logistic(self):
+        """
+        Returns the logistic of Variable object.
+
+        Parameters
+        =======
+        Variable object (self)
+
+        Returns
+        =======
+        Variable object with
+        - x attribute is updated based on: 1 / (1 + exp(-x))
+        - dx attribute is updated as: (1 − logistic(x)) * logistic(x)
+
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> sol = vt.Solver(2)
+        >>> x1 = sol.create_variable(2)
+        >>> v = logistic(x1)
+        >>> print(v)
+        Variable(0.8807971, [0.1049936   0.       ])
+        """
+
+        val = 1 / (1 + np.exp(-self.x))
+        value = val
+        der = (1 - value) * value * self.dx
+        return Variable(val, der)
+
+
+    def logarithm(self, a):
+        """
+        Returns the log of Variable object given any base a.
+
+        Parameters
+        =======
+        Variable object (self) and one float/int a as the base
+
+        Returns
+        =======
+        Variable object with
+        - x attribute is updated based on: log(x) / log(a)
+        - dx attribute is updated based on chain rule: (1 / x) * (1 / log(a))
+
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> sol = vt.Solver(2)
+        >>> x1 = sol.create_variable(3)
+        >>> v = logarithm(x1, 2)
+        >>> print(v)
+        Variable(1.5849625, [0.4808983 0. ])
+        """
+        val = np.log(self.x) / np.log(a)
+        der = 1 / (self.x * np.log(a)) * self.dx
+        return Variable(val, der)
+    
+    def sqrt(self):
+        """
+        Returns the square root value of Variable object
+
+        Parameters
+        =======
+        Variable object (self)
+
+        Returns
+        =======
+        Variable object with
+        - x attribute is updated based on: x ** (1/2)
+        - dx attribute is updated based on chain rule: (1/2) * (x) ** (-1/2)
+
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> sol = vt.Solver(2)
+        >>> x1 = sol.create_variable(5)
+        >>> v = np.sqrt(x1)
+        >>> print(v)
+        Variable(2.2360680, [0.2236068   0.       ])
+        """
+        if (self.x < 0):
+            raise ValueError("The input is a negative number.")
+        else:
+            val = np.sqrt(self.x)
+            der = (1/2) * (self.x) ** (-1/2) * self.dx
+        return Variable(val, der)
 
 class Variable_b():
     

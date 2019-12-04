@@ -251,6 +251,67 @@ def test_notequal_mismatch():
     x1=sol.create_variable(4)
     assert x1!=4 , "error with neq type mismatch"
 
+def test_exponential():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(5)
+    f = x1.exponential(2)
+    assert f.x == 32, "error with exponential"
+    assert (abs(f.dx - np.array([22.1807098, 0])) < 1e-6).sum() == 2, "error with exponential"
+
+def test_exponential_neg_base():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(5)
+    with pytest.raises(Exception):
+        f = exponential(5, -1)
+
+def test_sinh():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(2)
+    f = x1.sinh()
+    assert (f.x - 3.6268604) < 1e-6, "error with sinh"
+    assert (abs(f.dx - np.array([3.7621957, 0])) < 1e-6).sum() == 2, "error with sinh"
+
+def test_cosh():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(2)
+    f = x1.cosh()
+    assert (f.x - 3.7621957) < 1e-6, "error with cosh"
+    assert (abs(f.dx - np.array([3.6268604, 0])) < 1e-6).sum() == 2, "error with cosh"
+
+def test_tanh():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(2)
+    f = x1.tanh()
+    assert (f.x - 0.9640276) < 1e-6, "error with tanh"
+    assert (abs(f.dx - np.array([0.0706508, 0])) < 1e-6).sum() == 2, "error with tanh"
+
+def test_logistic():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(2)
+    f = x1.logistic()
+    assert (f.x - 0.8807971) < 1e-6, "error with logistic"
+    assert (abs(f.dx - np.array([0.1049936, 0])) < 1e-6).sum() == 2, "error with logistic"
+
+def test_logarithm():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(3)
+    f = x1.logarithm(2)
+    assert (f.x - 1.5849625) < 1e-6, "error with logarithm"
+    assert (abs(f.dx - np.array([0.4808983, 0])) < 1e-6).sum() == 2, "error with logarithm"
+
+def test_sqrt():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(5)
+    f = x1.sqrt()
+    assert (f.x - 2.2360680) < 1e-6, "error with sqrt"
+    assert (abs(f.dx - np.array([0.223606798, 0])) < 1e-6).sum() == 2, "error with sqrt"
+
+def test_sqrt_neg():
+    sol=vt.Solver(2)
+    x1=sol.create_variable(-5)
+    with pytest.raises(Exception):
+        f = sqrt(x1)
+
 def test_get_diff_scalar_to_scalar():
     sol=vt.Solver(1)
     def f(x):
