@@ -414,7 +414,7 @@ def test_get_diff_vector_to_scalar():
 
     sol=vt.Solver(3)
     def f(x,y,z):
-        return [x**2*z-s*y*z**3]
+        return [x**2*z-2*y*z**3]
     dx=sol.get_diff(f,[1,2,3])
     assert (dx==np.array([6, -54, -107])).all()
 
