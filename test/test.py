@@ -810,35 +810,35 @@ def testb_cosh():
     x1=vt.Variable_b(2)
     f = x1.cosh()
     f.grad_value = 1.0
-    assert (abs(x1.grad() - 3.7621957)) < 1e-6, "error with cosh"
+    assert (f.value - 3.7621957) < 1e-6, "error with cosh"
     assert (abs(x1.grad() - 3.6268604078470186) < 1e-6), "error with cosh"
 
 def testb_tanh():
     x1=vt.Variable_b(2)
     f = x1.tanh()
     f.grad_value = 1.0
-    assert (abs(x1.grad() - 0.9640276)) < 1e-6, "error with tanh"
+    assert (f.value - 0.9640276) < 1e-6, "error with tanh"
     assert (abs(x1.grad() - 0.07065082485316443) < 1e-6), "error with tanh"
 
 def testb_logistic():
     x1=vt.Variable_b(2)
     f = x1.logistic()
     f.grad_value = 1.0
-    assert (abs(x1.grad() - 0.8807971)) < 1e-6, "error with logistic"
+    assert (f.value - 0.8807971) < 1e-6, "error with logistic"
     assert (abs(x1.grad() - 0.10499358540350652) < 1e-6),"error with logistic"
 
 def testb_logarithm():
     x1=vt.Variable_b(3)
     f = x1.logarithm(2)
     f.grad_value = 1.0
-    assert (abs(x1.grad() - 1.5849625)) < 1e-6, "error with logarithm"
+    assert (f.value - 1.5849625) < 1e-6, "error with logarithm"
     assert (abs(x1.grad() - 0.48089834696298783) < 1e-6), "error with logarithm"
 
 def testb_sqrt():
     x1=vt.Variable_b(5)
     f = x1.sqrt()
     f.grad_value = 1.0
-    assert (abs(x1.grad() - 2.2360680)) < 1e-6, "error with sqrt"
+    assert (f.value - 2.2360680) < 1e-6, "error with sqrt"
     assert (abs(x1.grad() - 0.22360679774997896) < 1e-6),"error with sqrt"
 
 def testb_sqrt_neg():
