@@ -44,8 +44,8 @@ class Solver():
 
     def merge(self, d_list):
     	return np.stack(d_list, axis=0)
-        
-    def get_diff_forward(self, f, x):
+    
+    def evaluate_and_get_diff_forward(self, f, x):
         #check arguments of f
         #f must take in n independent variables
         sig = signature(f)
@@ -60,6 +60,21 @@ class Solver():
         for i in range(self.n):
             self.create_variable(x[i])
         ans=f(*self.independent_variable_list)
+        
+        #get value
+        value_ans=None
+        if(ans is None or len(ans)<=0):
+            raise TypeError("# of outputs of f <= 0")
+        elif(len(ans)>1):
+            xans=[]
+            for i in range(len(ans)):
+                xans.append(ans[i].x)
+            value_ans = xans
+        else:
+            value_ans = ans[0].x
+        
+        #get diff
+        diff_ans=None
         if(ans is None or len(ans)<=0):
             raise TypeError("# of outputs of f <= 0")
         elif(len(ans)>1):
@@ -68,13 +83,14 @@ class Solver():
                 dans.append(ans[i].dx)
             #reset solver again
             self.independent_variable_list=[]
-            return self.merge(dans)
+            diff_ans = self.merge(dans)
         else:
             #reset solver again
             self.independent_variable_list=[]
-            return ans[0].dx
+            diff_ans = ans[0].dx
+        return value_ans, diff_ans
     
-    def get_diff_backward(self, f, x):
+    def evaluate_and_get_diff_backward(self, f, x):
         #check arguments of f
         #f must take in n independent variables
         sig = signature(f)
@@ -92,6 +108,25 @@ class Solver():
             self.create_variable_b(x[i])
         ans=f(*self.independent_variable_list)
         self.independent_variable_list = []
+        
+        #get value
+        value_ans = None
+        if(ans is None or len(ans)<=0):
+            raise TypeError("# of outputs of f <= 0")
+        elif(len(ans)>1):
+            xans=[]
+            for i in range(len(ans)):
+                xans.append(ans[i].value)
+            #reset solver again
+            self.independent_variable_list=[]
+            value_ans = xans
+        else:
+            #reset solver again
+            self.independent_variable_list=[]
+            value_ans = ans[0].value
+        
+        #get diff
+        diff_ans = None
         if(len(ans)<=0):
             raise TypeError("# of outputs of f <= 0")
         elif(len(ans)==1):
@@ -105,7 +140,7 @@ class Solver():
                 dx.append(self.independent_variable_list[i].grad())
             dx=np.array(dx)
             self.independent_variable_list=[]
-            return dx
+            diff_ans = dx
         else:
             dans=[]
             for i in range(len(ans)):
@@ -120,14 +155,23 @@ class Solver():
                 dx=np.array(dx)
                 self.independent_variable_list=[]
                 dans.append(dx)
-            return self.merge(dans)
+            diff_ans = self.merge(dans)
+        return value_ans, diff_ans
             
     def get_diff(self, f, x, mode="forward"):
         if(mode=="forward"):
-            return self.get_diff_forward(f,x)
+            _, dx = self.evaluate_and_get_diff_forward(f,x)
+            return dx
         else:
-            return self.get_diff_backward(f,x)
-
+            _, dx = self.evaluate_and_get_diff_backward(f,x)
+            return dx
+    
+    def evaluate_and_get_diff(self, f, x, mode="forward"):
+        if(mode=="forward"):
+            return self.evaluate_and_get_diff_forward(f,x)
+        else:
+            return self.evaluate_and_get_diff_backward(f,x)
+    
     def __repr__(self):
         pass
     
