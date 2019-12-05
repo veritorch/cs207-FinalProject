@@ -461,6 +461,29 @@ def test_get_diff_vector_to_vector():
     dx=sol.get_diff(f,[1,2])
     assert (dx==np.array([[2,1],[1,1]])).all()
 
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [np.exp(x**2*y), x*np.log(2*x+y)]
+    dx=sol.get_diff(f,[1,2])
+    assert (dx-np.array([[4*np.exp(2), np.exp(2)], [np.log(4)+0.5, 1/4]])<1e-8).all()
+
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [x/y, np.sin(3*x+2*y)]
+    dx=sol.get_diff(f,[1,2])
+    assert (dx==np.array([[1/2,-1/4], [3*np.cos(7),2*np.cos(7)]])).all()
+
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [x*y, x*y + 2*x + 2*y]
+    dx=sol.get_diff(f,[1,2])
+    assert (dx==np.array([[2,1], [4,3]])).all()
+
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [x*y + np.exp(x*y), x**3*y-3*x*y**2+2*y**2]
+    dx=sol.get_diff(f,[1,2])
+    assert (dx-np.array([[2+2*np.exp(2),1+np.exp(2)], [-6,-3]])<1e-8).all()
 
 
 def test_get_diff_continuous_usage():
