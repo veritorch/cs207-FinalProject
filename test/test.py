@@ -767,10 +767,10 @@ def testb_arccos_out_of_range():
         f=np.arccos(x1)
 
 
-def testb_equal():
-    x1=vt.Variable_b(1)
-    x2=vt.Variable_b(1)
-    assert x1==x2, "error with eq"
+# def testb_equal():
+#     x1=vt.Variable_b(1)
+#     x2=vt.Variable_b(1)
+#     assert x1==x2, "error with eq"
 
 def testb_equal_type_mismatch():
     x1=vt.Variable_b(4)
