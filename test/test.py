@@ -379,7 +379,7 @@ def test_get_diff_vector_to_scalar():
     def f(x,y):
         return [x*y + np.exp(x*y)]
     dx=sol.get_diff(f,[1,2])
-    assert (dx==np.array([2+2*np.exp(1)**2,1+np.exp(1)**2])).all()
+    assert (dx==np.array([2+2*np.exp(2),1+np.exp(2)])).all()
 
 
     sol=vt.Solver(2)
