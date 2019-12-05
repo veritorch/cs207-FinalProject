@@ -87,7 +87,11 @@ class Solver():
         
         #for backward mode, if the function has multiple outputs, due to our design issue, we must recreate all variable for each output of the function
         #evaluate f to get number of outputs first
-        ans=f(*x)
+        self.independent_variable_list = []
+        for i in range(self.n):
+            self.create_variable_b(x[i])
+        ans=f(*self.independent_variable_list)
+        self.independent_variable_list = []
         if(len(ans)<=0):
             raise TypeError("# of outputs of f <= 0")
         elif(len(ans)==1):
