@@ -3,16 +3,11 @@ from inspect import signature
 class Solver():
 # Solver class
 # This class takes as an input the number of independent variables that the function  𝑓  has and tracks how many independent variables we have already created so far.
-
+#
 # It has the following attributes:
-
+#
 # n: the number of independent variables the function  𝑓  has
 # independent_variable_list: a list of independent variables that we have created so far using this solver class
-# We plan to implement the following methods for this solver class:
-
-# create_variable(x, dx=1): return an independent variable with value initialized to x and derivative initialized to dx. A copy of this independent variable will also be added to the independent_variable_list.
-# get_variable(idx): return the copy of the  𝑖𝑡ℎ  independent variable stored in the independent_variable_list
-# merge(*args): *args should be a list of variables  [𝑓1,𝑓2,...,𝑓𝑚] . This function returns the m by n jacobian matrix of  𝑓=[𝑓1,𝑓2,...,𝑓𝑚] .
     def __init__(self, n):
         self.n = n
         self.independent_variable_list = []
@@ -44,8 +39,8 @@ class Solver():
 
     def merge(self, d_list):
     	return np.stack(d_list, axis=0)
-        
-    def get_diff_forward(self, f, x):
+    
+    def evaluate_and_get_diff_forward(self, f, x):
         #check arguments of f
         #f must take in n independent variables
         sig = signature(f)
@@ -60,6 +55,21 @@ class Solver():
         for i in range(self.n):
             self.create_variable(x[i])
         ans=f(*self.independent_variable_list)
+        
+        #get value
+        value_ans=None
+        if(ans is None or len(ans)<=0):
+            raise TypeError("# of outputs of f <= 0")
+        elif(len(ans)>1):
+            xans=[]
+            for i in range(len(ans)):
+                xans.append(ans[i].x)
+            value_ans = xans
+        else:
+            value_ans = ans[0].x
+        
+        #get diff
+        diff_ans=None
         if(ans is None or len(ans)<=0):
             raise TypeError("# of outputs of f <= 0")
         elif(len(ans)>1):
@@ -68,13 +78,14 @@ class Solver():
                 dans.append(ans[i].dx)
             #reset solver again
             self.independent_variable_list=[]
-            return self.merge(dans)
+            diff_ans = self.merge(dans)
         else:
             #reset solver again
             self.independent_variable_list=[]
-            return ans[0].dx
+            diff_ans = ans[0].dx
+        return value_ans, diff_ans
     
-    def get_diff_backward(self, f, x):
+    def evaluate_and_get_diff_backward(self, f, x):
         #check arguments of f
         #f must take in n independent variables
         sig = signature(f)
@@ -87,7 +98,30 @@ class Solver():
         
         #for backward mode, if the function has multiple outputs, due to our design issue, we must recreate all variable for each output of the function
         #evaluate f to get number of outputs first
-        ans=f(*x)
+        self.independent_variable_list = []
+        for i in range(self.n):
+            self.create_variable_b(x[i])
+        ans=f(*self.independent_variable_list)
+        self.independent_variable_list = []
+        
+        #get value
+        value_ans = None
+        if(ans is None or len(ans)<=0):
+            raise TypeError("# of outputs of f <= 0")
+        elif(len(ans)>1):
+            xans=[]
+            for i in range(len(ans)):
+                xans.append(ans[i].value)
+            #reset solver again
+            self.independent_variable_list=[]
+            value_ans = xans
+        else:
+            #reset solver again
+            self.independent_variable_list=[]
+            value_ans = ans[0].value
+        
+        #get diff
+        diff_ans = None
         if(len(ans)<=0):
             raise TypeError("# of outputs of f <= 0")
         elif(len(ans)==1):
@@ -101,7 +135,7 @@ class Solver():
                 dx.append(self.independent_variable_list[i].grad())
             dx=np.array(dx)
             self.independent_variable_list=[]
-            return dx
+            diff_ans = dx
         else:
             dans=[]
             for i in range(len(ans)):
@@ -116,23 +150,33 @@ class Solver():
                 dx=np.array(dx)
                 self.independent_variable_list=[]
                 dans.append(dx)
-            return self.merge(dans)
+            diff_ans = self.merge(dans)
+        return value_ans, diff_ans
             
     def get_diff(self, f, x, mode="forward"):
         if(mode=="forward"):
-            return self.get_diff_forward(f,x)
+            _, dx = self.evaluate_and_get_diff_forward(f,x)
+            return dx
         else:
-            return self.get_diff_backward(f,x)
+            _, dx = self.evaluate_and_get_diff_backward(f,x)
+            return dx
+    
+    def evaluate_and_get_diff(self, f, x, mode="forward"):
+        if(mode=="forward"):
+            return self.evaluate_and_get_diff_forward(f,x)
+        else:
+            return self.evaluate_and_get_diff_backward(f,x)
+
     
     def __str__(self):
-        pass
+        return "Solver("+ str(self.n)+")"
 
     
 class Variable():
 # This class takes as inputs the initial value  𝑥  and derivative  𝑑𝑥  (optional, set to 1 by default) and includes methods to overload basic arithmic operators for the veritorch package.
-
+#
 # It has the following attributes:
-
+#
 # x: the current scalar value of this variable
 # dx: the current derivative of this variable, which should be a vector of length n, where n is the number of independent variables of the function  𝑓  whose derivative is being evaluated.
 
@@ -524,8 +568,6 @@ class Variable():
         return Variable(val, der)
     
     def sin(self):
-        # NOTE: implementing elementary function within Variable class, for good style.
-        # PLEASE UPDATE documentation
         """ 
         Returns the sine of Variable object.
         
@@ -973,7 +1015,12 @@ class Variable():
         return Variable(val, der)
 
 class Variable_b():
-    
+# This class takes as inputs the initial value  𝑥  and derivative  𝑑𝑥  (optional, set to None by default) and includes methods to overload basic arithmic operators for the veritorch package.
+#
+# It has the following attributes:
+#
+# value: the current scalar value of this variable
+# grad_value: the current derivative of this variable
     def __init__(self, value):
         """
         Initiate Variable object.

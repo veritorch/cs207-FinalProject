@@ -2,7 +2,6 @@ import veritorch.veritorch as vt
 import numpy as np
 import math
 import pytest
-
 ###################################
 #
 #
@@ -484,6 +483,12 @@ def test_get_diff_vector_to_vector():
         return [x*y + np.exp(x*y), x**3*y-3*x*y**2+2*y**2]
     dx=sol.get_diff(f,[1,2])
     assert (dx-np.array([[2+2*np.exp(2),1+np.exp(2)], [-6,-3]])<1e-8).all()
+    
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [y*x.exponential(2), x*y.logistic()]
+    dx=sol.get_diff(f,[5,2])
+    assert ((dx-np.array([[2*22.18070977791825, 32],[0.8807971, 5*0.10499358540350652]]))<1e-5).all()
 
 
 def test_get_diff_continuous_usage():
@@ -517,6 +522,15 @@ def test_f_return_nothing():
         return []
     with pytest.raises(TypeError):
         dx=sol.get_diff(f,[1,2,3,4,5])
+
+def test_evaluate_and_get_diff_vector_to_vector():
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [y*x.exponential(2), x*y.logistic()]
+    x, dx=sol.evaluate_and_get_diff(f,[5,2])
+    assert (abs(x[0]-64)<1e-5)
+    assert (abs(x[1]-5*0.8807971)<1e-5)
+    assert ((dx-np.array([[2*22.18070977791825, 32],[0.8807971, 5*0.10499358540350652]]))<1e-5).all()
         
 ###################################
 #
@@ -1019,6 +1033,12 @@ def testb_get_diff_vector_to_vector():
         return [x*y + np.exp(x*y), x**3*y-3*x*y**2+2*y**2]
     dx=sol.get_diff(f,[1,2],mode="backward")
     assert (dx-np.array([[2+2*np.exp(2),1+np.exp(2)], [-6,-3]])<1e-8).all()
+    
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [y*x.exponential(2), x*y.logistic()]
+    dx=sol.get_diff(f,[5,2],mode="backward")
+    assert ((dx-np.array([[2*22.18070977791825, 32],[0.8807971, 5*0.10499358540350652]]))<1e-5).all()
 
 def testb_get_diff_continuous_usage():
     sol=vt.Solver(2)
@@ -1051,3 +1071,27 @@ def testb_f_return_nothing():
         return []
     with pytest.raises(TypeError):
         dx=sol.get_diff(f,[1,2,3,4,5],mode="backward")
+        
+def testb_evaluate_and_get_diff_vector_to_vector():
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [y*x.exponential(2), x*y.logistic()]
+    x, dx=sol.evaluate_and_get_diff(f,[5,2],mode="backward")
+    assert (abs(x[0]-64)<1e-5)
+    assert (abs(x[1]-5*0.8807971)<1e-5)
+    assert ((dx-np.array([[2*22.18070977791825, 32],[0.8807971, 5*0.10499358540350652]]))<1e-5).all()
+    
+###################################
+#
+#
+#
+#    test solver
+#
+#
+#
+####################################
+
+def test_solver_str():
+    sol=vt.Solver(2)
+    print(sol)
+
