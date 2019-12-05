@@ -2,7 +2,6 @@ import veritorch.veritorch as vt
 import numpy as np
 import math
 import pytest
-
 ###################################
 #
 #
@@ -1081,3 +1080,18 @@ def testb_evaluate_and_get_diff_vector_to_vector():
     assert (abs(x[0]-64)<1e-5)
     assert (abs(x[1]-5*0.8807971)<1e-5)
     assert ((dx-np.array([[2*22.18070977791825, 32],[0.8807971, 5*0.10499358540350652]]))<1e-5).all()
+    
+###################################
+#
+#
+#
+#    test solver
+#
+#
+#
+####################################
+
+def test_solver_str():
+    sol=vt.Solver(2)
+    print(sol)
+

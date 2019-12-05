@@ -174,7 +174,7 @@ class Solver():
 
     
     def __str__(self):
-        pass
+        return "Solver("+ str(self.n)+")"
 
     
 class Variable():
