@@ -331,7 +331,6 @@ def test_get_diff_scalar_to_scalar():
     dx=sol.get_diff(f,[1])
     assert (dx==np.array([3])).all()
 
-
     sol=vt.Solver(1)
     def f(x):
         return [np.exp(x)/np.sqrt(x)]
@@ -381,7 +380,6 @@ def test_get_diff_vector_to_scalar():
     dx=sol.get_diff(f,[1,2])
     assert (dx-np.array([2+2*np.exp(2),1+np.exp(2)])<1e-8).all()
 
-
     sol=vt.Solver(2)
     def f(x,y):
         return [x**3*y-3*x*y**2+2*y**2]
@@ -424,6 +422,19 @@ def test_get_diff_scalar_to_vector():
         return [x*x*x, 4*x]
     dx=sol.get_diff(f,[2])
     assert (dx==np.array([[12],[4]])).all()
+
+    sol=vt.Solver(1)
+    def f(x):
+        return [x*x*x, 4*x]
+    dx=sol.get_diff(f,[2])
+    assert (dx==np.array([[12],[4]])).all()
+
+    sol=vt.Solver(1)
+    def f(x):
+        return [np.sin(x)*np.cos(x)*np.tan(x), np.exp(np.sin(np.exp(x)))]
+    dx=sol.get_diff(f,[1])
+    assert (dx-np.array([[np.sin(2)], [np.cos(np.exp(1))*np.exp(np.sin(np.exp(1))+1)]])<1e-8).all()
+
 
 def test_get_diff_vector_to_vector():
     sol=vt.Solver(2)
