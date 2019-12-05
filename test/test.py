@@ -354,7 +354,7 @@ def test_get_diff_scalar_to_scalar():
     def f(x):
         return [np.sin(x)*np.cos(x)*np.tan(x)]
     dx=sol.get_diff(f,[1])
-    assert (dx==np.array([np.sin(2)])).all()
+    assert (dx-np.array([np.sin(2)])<1e-8).all()
 
     sol=vt.Solver(1)
     def f(x):
