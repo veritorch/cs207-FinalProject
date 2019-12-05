@@ -171,9 +171,7 @@ class Solver():
             return self.evaluate_and_get_diff_forward(f,x)
         else:
             return self.evaluate_and_get_diff_backward(f,x)
-    
-    def __repr__(self):
-        pass
+
     
     def __str__(self):
         pass
@@ -211,10 +209,6 @@ class Variable():
         """
         self.x = x
         self.dx = dx
-    
-    def __repr__(self):
-        # TODO
-        pass
     
     def __str__(self):
         """ 
@@ -845,8 +839,6 @@ class Variable():
 
 
     def sinh(self):
-        # NOTE: implementing elementary function within Variable class, for good style.
-        # PLEASE UPDATE documentation
         """
         Returns the sinh of Variable object.
 
@@ -876,8 +868,6 @@ class Variable():
         return Variable(val, der)
 
     def cosh(self):
-        # NOTE: implementing elementary function within Variable class, for good style.
-        # PLEASE UPDATE documentation
         """
         Returns the cosh of Variable object.
 
@@ -908,8 +898,6 @@ class Variable():
 
 
     def tanh(self):
-        # NOTE: implementing elementary function within Variable class, for good style.
-        # PLEASE UPDATE documentation
         """
         Returns the tanh of Variable object.
 
@@ -977,6 +965,7 @@ class Variable():
         Parameters
         =======
         Variable object (self) and one float/int a as the base
+        Positive int/float that is not 1 (a)
 
         Returns
         =======
@@ -994,9 +983,12 @@ class Variable():
         >>> print(v)
         Variable(1.5849625, [0.4808983 0. ])
         """
-        val = np.log(self.x) / np.log(a)
-        der = 1 / (self.x * np.log(a)) * self.dx
-        return Variable(val, der)
+        if a<=0 or a==1:
+            raise ValueError("The base cannot be 1 and must be positive!")
+        else:
+            val = np.log(self.x) / np.log(a)
+            der = 1 / (self.x * np.log(a)) * self.dx
+            return Variable(val, der)
     
     def sqrt(self):
         """
@@ -1047,30 +1039,72 @@ class Variable_b():
         self.value = value
         self.children = []
         self.grad_value = None #None means it is not yet evaluated
-    
-    def __repr__(self):
-        #TODO
-        pass
 
     def __str__(self):
-        #TODO
         if self.grad_value == None:
             return "Variable_b(" + str(self.value) + ", " + "None" + ")"
         return "Variable_b(" + str(self.value) + ", " + str(self.grad_value) + ")"
 
     def grad(self):
-        #TODO: DOCTEST
         if self.grad_value is None: # recurse only if the value is not yet cached
             self.grad_value = sum(weight * var.grad()
                     for weight, var in self.children)#chain rule to calc derivative
         return self.grad_value
     
     def __neg__(self):
+        """ 
+        Returns the negative of Variable_b object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: log(self.value)
+        - children attribute is updated
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> v = -x1
+        >>> print(v)
+        Variable_b(-3, None)
+        """
         z = Variable_b(-self.value)
         self.children.append((-1, z))  # weight = ∂z/∂self = -1
         return z
     
     def __add__(self, other):
+        """ 
+        Returns addition of Variable object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        Variable_b object (other)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: self.value + other.value
+        - children attribute is updated
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> x2 = vt.Variable_b(5)
+        >>> v = x1+x2
+        >>> print(v)
+        Variable_b(8, None)
+        """
         try:
             z = Variable_b(self.value + other.value)
             other.children.append((1, z)) # weight = ∂z/∂self = 1
@@ -1081,15 +1115,114 @@ class Variable_b():
         return z
     
     def __radd__(self, other):
+        """ 
+        Returns addition of int/float and Variable object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        float/int (other)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: other+self.value
+        - children attribute is updated
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> v = 3+x1
+        >>> print(v)
+        Variable_b(6, None)
+        """
         return self.__add__(other)
     
     def __sub__(self, other):
+        """ 
+        Returns subtraction of Variable object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        Variable_b object (other)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: self.value + other.value
+        - children attribute is updated
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> x2 = vt.Variable_b(5)
+        >>> v = x1-x2
+        >>> print(v)
+        Variable_b(-2, None)
+        """
         return self.__add__(-other)
     
     def __rsub__(self, other):
+        """ 
+        Returns subtraction of int/float and Variable object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        float/int (other)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: other-self.value
+        - children attribute is updated
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> v = 3-x1
+        >>> print(v)
+        Variable_b(0, None)
+        """
+
         return -self.__sub__(other)
     
     def __mul__(self, other):
+        """ 
+        Returns multiplication of Variable object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        Variable_b object (other)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: self.value*other.value
+        - children attribute is updated
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> x2 = vt.Variable_b(5)
+        >>> v = x1*x2
+        >>> print(v)
+        Variable_b(15, None)
+        """
         try:
             z = Variable_b(self.value * other.value)
             self.children.append((other.value, z)) # weight = ∂z/∂self = other.value
@@ -1100,9 +1233,58 @@ class Variable_b():
         return z
     
     def __rmul__(self, other):
+        """ 
+        Returns multiplication of int/float and Variable object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        float/int (other)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: other*self.value
+        - children attribute is updated
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> v = 3*x1
+        >>> print(v)
+        Variable_b(9, None)
+        """
         return self.__mul__(other)
     
     def __truediv__(self, other):
+        """ 
+        Returns division of Variable object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        Variable_b object (other)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: self.value/other.value
+        - children attribute is updated 
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> x2 = vt.Variable_b(5)
+        >>> v = x1/x2
+        >>> print(v)
+        Variable_b(0.6, None)
+        """
         if isinstance(other, int):
             if other == 0:
                 raise ValueError("Cannot divide by 0")
@@ -1118,6 +1300,30 @@ class Variable_b():
         return z
     
     def __rtruediv__(self, other):
+        """ 
+        Returns division of int/float and Variable object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        float/int (other)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: other/self.value
+        - children attribute is updated 
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> v = 3/x1
+        >>> print(v)
+        Variable_b(1.0, None)
+        """
         if self.value == 0:
             raise ValueError("Cannot divide by 0")
         z = Variable_b(other/self.value)
@@ -1125,36 +1331,198 @@ class Variable_b():
         return z
     
     def __pow__(self, p):
+        """ 
+        Returns the power of Variable_b object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        float/int (p)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: self.value**p
+        - children attribute is appended a tuple of (derivative at self.value, value)
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> v = x1**3
+        >>> print(v)
+        Variable_b(27, None)
+        """
         z = Variable_b(self.value**p)
         self.children.append((p*self.value**(p-1), z)) # weight = ∂z/∂self = p*self.value**(p-1)
         return z
     
     def exp(self):
+        """ 
+        Returns the exponential of Variable_b object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: exp(self.value)
+        - children attribute is appended a tuple of (derivative at self.value, value)
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> v = np.exp(x1)
+        >>> print(v)
+        Variable_b(20.085536923187668, None)
+        """
         z = Variable_b(np.exp(self.value))
         self.children.append((np.exp(self.value), z)) # weight = ∂z/∂self = exp(self.value)
         return z
     
     def log(self):
+        """ 
+        Returns the natual log of Variable_b object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: log(self.value)
+        - children attribute is appended a tuple of (derivative at self.value, value)
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> v = np.log(x1)
+        >>> print(v)
+        Variable_b(1.0986122886681098, None)
+        """
         z = Variable_b(np.log(self.value))
         self.children.append((1/self.value, z)) # weight = ∂z/∂self = 1/self.value
         return z
     
     def sin(self):
+        """ 
+        Returns the sine of Variable_b object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: sin(self.value)
+        - children attribute is appended a tuple of (derivative at self.value, value)
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(math.pi/3)
+        >>> v = np.sin(x1)
+        >>> print(v)
+        Variable_b(0.8660254037844386, None)
+        """
         z = Variable_b(np.sin(self.value))
         self.children.append((np.cos(self.value), z)) # weight = ∂z/∂self = np.cos(self.value)
         return z
     
     def cos(self):
+        """ 
+        Returns the cosine of Variable_b object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: cos(self.value)
+        - children attribute is appended a tuple of (derivative at self.value, value)
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(math.pi/3)
+        >>> v = np.cos(x1)
+        >>> print(v)
+        Variable_b(0.5000000000000001, None)
+        """
         z = Variable_b(np.cos(self.value))
         self.children.append((-np.sin(self.value), z)) # weight = ∂z/∂self = -np.sin(self.value)
         return z
     
     def tan(self):
+        """ 
+        Returns the tangent of Variable_b object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: tan(self.value)
+        - children attribute is appended a tuple of (derivative at self.value, value)
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> v = np.tan(x1)
+        >>> print(v)
+        Variable_b(-0.1425465430742778, None)
+        """
         z = Variable_b(np.tan(self.value))
         self.children.append((1/(np.cos(self.value))**2, z))
         return z
     
     def arcsin(self):
+        """ 
+        Returns the acrsine of Variable_b object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: arctan(self.value)
+        - children attribute is appended a tuple of (derivative at self.value, value)
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(0)
+        >>> v = np.arcsin(x1)
+        >>> print(v)
+        Variable_b(0.0, None)
+        """
         if self.value >= 1 or self.value <= -1:
             raise ValueError("arcsin does not exist beyond (-1,1)")
         z = Variable_b(np.arcsin(self.value))
@@ -1162,6 +1530,29 @@ class Variable_b():
         return z
     
     def arccos(self):
+        """ 
+        Returns the arccosine of Variable_b object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: arccos(self.value)
+        - children attribute is appended a tuple of (derivative at self.value, value)
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(0)
+        >>> v = np.arccos(x1)
+        >>> print(v)
+        Variable_b(1.5707963267948966, None)
+        """
         if self.value >= 1 or self.value <= -1:
             raise ValueError("arccos does not exist beyond (-1,1)")
         z = Variable_b(np.arccos(self.value))
@@ -1169,11 +1560,57 @@ class Variable_b():
         return z
     
     def arctan(self):
+        """ 
+        Returns the arctangent of Variable_b object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: arctan(self.value)
+        - children attribute is appended a tuple of (derivative at self.value, value)
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(0)
+        >>> v = np.arctan(x1)
+        >>> print(v)
+        Variable_b(0.0, None)
+        """
         z = Variable_b(np.arctan(self.value))
         self.children.append((1/(1+self.value**2), z))
         return z
 
     def __eq__(self, other):
+        """ 
+        Returns if two Variable_b objects are equal.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        Variable_b object (other)
+        
+        Returns
+        =======
+        True if value and grad_value are the same
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(0)
+        >>> x2 = vt.Variable_b(2)
+        >>> print(x1 == x2)
+        False
+        """
+
         try:
             if(self.value!=other.value):
                 return False
@@ -1187,9 +1624,55 @@ class Variable_b():
             return False
 
     def __ne__(self, other):
+        """ 
+        Returns if two Variable_b objects are not equal.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        Variable_b object (other)
+        
+        Returns
+        =======
+        True if either value or grad_value are not the same
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(0)
+        >>> x2 = vt.Variable_b(2)
+        >>> print(x1 != x2)
+        True
+        """
         return not self.__eq__(other)
     
     def exponential(self, a):
+        """ 
+        Returns the exponential with base a of Variable_b object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        float/int (a)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: a**self.value
+        - children attribute is appended a tuple of (derivative at self.value, value)
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> v = x1.exponential(2)
+        >>> print(v)
+        Variable_b(8, None)
+        """
         z = Variable_b(a ** self.value)
         if a < 0:
             raise ValueError("Cannot do derivative")
@@ -1198,31 +1681,173 @@ class Variable_b():
             return z
 
     def sinh(self):
+        """ 
+        Returns the sinh of Variable_b object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: sinh(self.value)
+        - children attribute is appended a tuple of (derivative at self.value, value)
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> v = np.sinh(x1)
+        >>> print(v)
+        Variable_b(10.017874927409903, None)
+        """
         z = Variable_b(np.sinh(self.value))
         self.children.append((np.cosh(self.value), z)) 
         return z
 
     def cosh(self):
+        """ 
+        Returns the cosh of Variable_b object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: cosh(self.value)
+        - children attribute is appended a tuple of (derivative at self.value, value)
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> v = np.cosh(x1)
+        >>> print(v)
+        Variable_b(10.067661995777765, None)
+        """
         z = Variable_b(np.cosh(self.value))
         self.children.append((np.sinh(self.value), z)) 
         return z
 
     def tanh(self):
+        """ 
+        Returns the tanh of Variable_b object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: tanh(self.value)
+        - children attribute is appended a tuple of (derivative at self.value, value)
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> v = np.tanh(x1)
+        >>> print(v)
+        Variable_b(0.9950547536867305, None)
+        """
         z = Variable_b(np.tanh(self.value))
         self.children.append((1-(np.tanh(self.value))**2, z)) 
         return z
 
     def logistic(self):
+        """ 
+        Returns the logistic of Variable_b object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: logistic(self.value)
+        - children attribute is appended a tuple of (derivative at self.value, value)
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> v = x1.logistic()
+        >>> print(v)
+        Variable_b(0.9525741268224334, None)
+        """
         z = Variable_b(1 / (1 + np.exp(-self.value)))
         self.children.append((np.exp(self.value)/(1+np.exp(self.value))**2, z)) 
         return z
 
     def logarithm(self, a):
-        z = Variable_b(np.log(self.value) / np.log(a))
-        self.children.append((1/(self.value * np.log(a)), z)) 
-        return z
+        """ 
+        Returns the logarithm with base a of Variable_b object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        Positive int/float not equal to 1 (a)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: log_a(self.value)
+        - children attribute is appended a tuple of (derivative at self.value, value)
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> v = x1.logarithm(2)
+        >>> print(v)
+        Variable_b(1.5849625007211563, None)
+        """
+        if a<=0 or a==1:
+            raise ValueError("The base cannot be 1 and must be positive!")
+        else:
+            z = Variable_b(np.log(self.value) / np.log(a))
+            self.children.append((1/(self.value * np.log(a)), z)) 
+            return z
     
     def sqrt(self):
+        """ 
+        Returns the square root of Variable_b object.
+        
+        Parameters
+        =======
+        Variable_b object (self)
+        
+        Returns
+        =======
+        Variable_b object with
+        - value attribute is updated based on: sqrt(self.value)
+        - children attribute is appended a tuple of (derivative at self.value, value)
+        
+        Examples
+        =======
+        >>> import numpy as np
+        >>> import veritorch as vt
+        >>> import math
+        >>> x1 = vt.Variable_b(3)
+        >>> v = x1.sqrt()
+        >>> print(v)
+        Variable_b(1.7320508075688772, None)
+        """
         if (self.value < 0):
             raise ValueError("The input is a negative number.")
         else:
