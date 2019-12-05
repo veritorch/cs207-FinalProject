@@ -1171,6 +1171,6 @@ class Variable_b():
         if (self.value < 0):
             raise ValueError("The input is a negative number.")
         else:
-            z = Variable_b(np.sqrt(self.x))
-            self.children.append(((1/2) * (self.x) ** (-1/2), z)) 
+            z = Variable_b(np.sqrt(self.value))
+            self.children.append(((1/2) * (self.value) ** (-1/2), z)) 
             return z
