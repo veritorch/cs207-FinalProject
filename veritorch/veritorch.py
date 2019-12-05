@@ -3,16 +3,11 @@ from inspect import signature
 class Solver():
 # Solver class
 # This class takes as an input the number of independent variables that the function  𝑓  has and tracks how many independent variables we have already created so far.
-
+#
 # It has the following attributes:
-
+#
 # n: the number of independent variables the function  𝑓  has
 # independent_variable_list: a list of independent variables that we have created so far using this solver class
-# We plan to implement the following methods for this solver class:
-
-# create_variable(x, dx=1): return an independent variable with value initialized to x and derivative initialized to dx. A copy of this independent variable will also be added to the independent_variable_list.
-# get_variable(idx): return the copy of the  𝑖𝑡ℎ  independent variable stored in the independent_variable_list
-# merge(*args): *args should be a list of variables  [𝑓1,𝑓2,...,𝑓𝑚] . This function returns the m by n jacobian matrix of  𝑓=[𝑓1,𝑓2,...,𝑓𝑚] .
     def __init__(self, n):
         self.n = n
         self.independent_variable_list = []
@@ -179,9 +174,9 @@ class Solver():
     
 class Variable():
 # This class takes as inputs the initial value  𝑥  and derivative  𝑑𝑥  (optional, set to 1 by default) and includes methods to overload basic arithmic operators for the veritorch package.
-
+#
 # It has the following attributes:
-
+#
 # x: the current scalar value of this variable
 # dx: the current derivative of this variable, which should be a vector of length n, where n is the number of independent variables of the function  𝑓  whose derivative is being evaluated.
 
@@ -573,8 +568,6 @@ class Variable():
         return Variable(val, der)
     
     def sin(self):
-        # NOTE: implementing elementary function within Variable class, for good style.
-        # PLEASE UPDATE documentation
         """ 
         Returns the sine of Variable object.
         
@@ -1022,7 +1015,12 @@ class Variable():
         return Variable(val, der)
 
 class Variable_b():
-    
+# This class takes as inputs the initial value  𝑥  and derivative  𝑑𝑥  (optional, set to None by default) and includes methods to overload basic arithmic operators for the veritorch package.
+#
+# It has the following attributes:
+#
+# value: the current scalar value of this variable
+# grad_value: the current derivative of this variable
     def __init__(self, value):
         """
         Initiate Variable object.
