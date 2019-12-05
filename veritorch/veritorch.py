@@ -709,7 +709,7 @@ class Variable():
     
     def __eq__(self, other):
         """
-        Return true if two Variable objects are equal(both value and derivative must match).
+        Return true if two Variable objects are equal (both value and derivative must match).
 
         Parameters
         =======
@@ -1124,3 +1124,53 @@ class Variable_b():
         z = Variable_b(np.arctan(self.value))
         self.children.append((1/(1+self.value**2), z))
         return z
+
+    def __eq__(self, other):
+        try:
+            return (self.value == other.value) and ((self.children == other.children).all()) and (self.grad_value == other.grad_value)
+        except AttributeError:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+    
+    def exponential(self, a):
+        z = Variable_b(a ** self.value)
+        if a < 0:
+            raise ValueError("Cannot do derivative")
+        else:
+            self.children.append((np.log(a) * a ** self.value, z)) # weight = ∂z/∂self = exp(self.value)
+            return z
+
+    def sinh(self):
+        z = Variable_b(np.sinh(self.value))
+        self.children.append((np.cosh(self.value), z)) 
+        return z
+
+    def cosh(self):
+        z = Variable_b(np.cosh(self.value))
+        self.children.append((np.sinh(self.value), z)) 
+        return z
+
+    def tanh(self):
+        z = Variable_b(np.tanh(self.value))
+        self.children.append((1-(np.tanh(self.value))**2, z)) 
+        return z
+
+    def logistic(self):
+        z = Variable_b(1 / (1 + np.exp(-self.value)))
+        self.children.append((np.exp(self.value)/(1+np.exp(self.value))**2, z)) 
+        return z
+
+    def logarithm(self, a):
+        z = Variable_b(np.log(self.value) / np.log(a))
+        self.children.append((1/(self.value * np.log(a)), z)) 
+        return z
+    
+    def sqrt(self):
+        if (self.value < 0):
+            raise ValueError("The input is a negative number.")
+        else:
+            z = Variable_b(np.sqrt(self.x))
+            self.children.append(((1/2) * (self.x) ** (-1/2), z)) 
+            return z
