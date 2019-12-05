@@ -1127,7 +1127,14 @@ class Variable_b():
 
     def __eq__(self, other):
         try:
-            return (self.value == other.value) and ((self.children == other.children).all()) and (self.grad_value == other.grad_value)
+            if(self.value!=other.value):
+                return False
+            elif self.grad_value is None and other.grad_value is None:
+                return True
+            elif self.grad_value == other.grad_value:
+                return True
+            else:
+                return False
         except AttributeError:
             return False
 
