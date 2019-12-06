@@ -112,6 +112,15 @@ def test_pow():
     assert f.x == 81, "error with pow"
     assert (f.dx == np.array([18., 18.])).all(), "error with pow"
 
+    sol=vt.Solver(3)
+    x12=sol.create_variable(4)
+    x22=sol.create_variable(5)
+    x32=sol.create_variable(2)
+    f = (x12+x22) ** x32
+    assert f.x == 81, "error with pow"
+    print(f.dx)
+    assert (f.dx == np.array([18., 18., 0])).all(), "error with pow"
+
 def test_exp():
     sol=vt.Solver(2)
     x1=sol.create_variable(0)
@@ -695,6 +704,24 @@ def testb_pow():
     assert f.value == 81, "error with pow"
     assert x1.grad() == 18, "error with pow"
     assert x2.grad() == 18, "error with pow"
+
+    x12=vt.Variable_b(4)
+    x32=vt.Variable_b(2)
+    f = (x12) ** x32
+    f.grad_value = 1.0
+    assert f.value == 16, "error with pow"
+    assert x12.grad() == 8, "error with pow"
+    assert abs(x32.grad() - 22.1807097779) < 10**(-8), "error with pow"
+    
+    x12=vt.Variable_b(4)
+    x22=vt.Variable_b(5)
+    x32=vt.Variable_b(2)
+    f = (x12+x22) ** x32
+    f.grad_value = 1.0
+    assert f.value == 81, "error with pow"
+    assert x12.grad() == 18, "error with pow"
+    assert x22.grad() == 18, "error with pow"
+    assert abs(x32.grad() - 177.975190764) < 10**(-8), "error with pow"
 
 def testb_exp():
     x1=vt.Variable_b(0)
