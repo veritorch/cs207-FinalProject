@@ -484,31 +484,38 @@ class Variable():
         return Variable(val, der)
     
     def __pow__(self, p):
-        """ 
+        """
         Returns the power of Variable object.
-        
+
         Parameters
         =======
         Variable object (self)
-        
+        Variable object (p) OR float/int (p)
+
         Returns
         =======
         Variable object with
         - x attribute is updated based on: x^p
         - dx attribute is updated based on chain rule: (x^p)' = p * x^(p-1) * x'
-        
+
         Examples
         =======
         >>> import numpy as np
         >>> import veritorch as vt
         >>> sol = vt.Solver(2)
         >>> x1 = sol.create_variable(5)
-        >>> v = x1 ** 3
+        >>> x2 = sol.create_variable(3)
+        >>> v = x1 ** x2
         >>> print(v)
         Variable(125, [75.  0.])
         """
-        val = self.x ** p
-        der = p * self.x ** (p-1) * self.dx
+        
+        try:
+            val = self.x ** p.x
+            der = p.x * self.x ** (p.x - 1) * self.dx + np.log(self.x) * self.x ** p.x * p.dx
+        except AttributeError:
+            val = self.x ** p
+            der = p * self.x ** (p - 1) * self.dx
         return Variable(val, der)
     
     def exp(self):
@@ -1329,32 +1336,38 @@ class Variable_b():
         return z
     
     def __pow__(self, p):
-        """ 
+        """
         Returns the power of Variable_b object.
-        
+
         Parameters
         =======
         Variable_b object (self)
-        float/int (p)
-        
+        Variable_b object or float/int (p)
+
         Returns
         =======
         Variable_b object with
-        - value attribute is updated based on: self.value**p
-        - children attribute is appended a tuple of (derivative at self.value, value)
-        
+        - value attribute is updated based on: self.value ** p.value or self.value ** p
+        - children attribute is updated
+
         Examples
         =======
         >>> import numpy as np
         >>> import veritorch as vt
         >>> import math
         >>> x1 = vt.Variable_b(3)
-        >>> v = x1**3
+        >>> x2 = vt.Variable_b(3)
+        >>> v = x1**x2
         >>> print(v)
         Variable_b(27, None)
         """
-        z = Variable_b(self.value**p)
-        self.children.append((p*self.value**(p-1), z)) # weight = ∂z/∂self = p*self.value**(p-1)
+        try:
+            z = Variable_b(self.value ** p.value)
+            self.children.append((p.value * self.value ** (p.value - 1), z))
+            p.children.append((np.log(self.value) * self.value ** p.value, z))
+        except AttributeError:
+            z = Variable_b(self.value ** p)
+            self.children.append((p * self.value ** (p - 1), z))
         return z
     
     def exp(self):
