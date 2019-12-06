@@ -509,9 +509,10 @@ class Variable():
         >>> print(v)
         Variable(125, [75.  0.])
         """
+        
         try:
             val = self.x ** p.x
-            der = p.x * self.x ** (p.x - 1) * self.dx
+            der = p.x * self.x ** (p.x - 1) * self.dx + np.log(self.x) * self.x ** p.x * p.dx
         except AttributeError:
             val = self.x ** p
             der = p * self.x ** (p - 1) * self.dx

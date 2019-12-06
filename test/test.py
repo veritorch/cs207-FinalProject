@@ -98,11 +98,11 @@ def test_rtruediv():
     f2 = 1/(2*x1)
     f3 = 7/(x1*x1)
     assert f.x == 0.25, "error with rtruediv"
-    assert (f.dx == np.array([-0.0625, -0.    , -0.    ])).all(), "error with rtruediv"
+    assert (abs(f.dx - np.array([-0.0625, -0.    , -0.    ]))<1e-6).all(), "error with rtruediv"
     assert f2.x == 0.125, "error with rtruediv"
-    assert (f2.dx == np.array([-0.03125, -0.     , -0.   ])).all(), "error with rtruediv"
+    assert (abs(f2.dx - np.array([-0.03125, -0.     , -0.   ]))<1e-6).all(), "error with rtruediv"
     assert f3.x == 0.4375, "error with rtruediv"
-    assert (f3.dx == np.array([-0.21875, -0.     , -0.     ])).all(), "error with rtruediv"
+    assert (abs(f3.dx - np.array([-0.21875, -0.     , -0.     ]))<1e-6).all(), "error with rtruediv"
 
 def test_pow():
     sol=vt.Solver(2)
@@ -110,7 +110,7 @@ def test_pow():
     x2=sol.create_variable(5)
     f = (x1+x2) ** 2
     assert f.x == 81, "error with pow"
-    assert (f.dx == np.array([18., 18.])).all(), "error with pow"
+    assert (abs(f.dx - np.array([18., 18.]))<1e-6).all(), "error with pow"
 
     sol=vt.Solver(3)
     x12=sol.create_variable(4)
@@ -119,7 +119,7 @@ def test_pow():
     f = (x12+x22) ** x32
     assert f.x == 81, "error with pow"
     print(f.dx)
-    assert (f.dx == np.array([18., 18., 0])).all(), "error with pow"
+    assert (abs(f.dx - np.array([18., 18., 177.975190764]))<1e-6).all(), "error with pow"
 
 def test_exp():
     sol=vt.Solver(2)
@@ -127,7 +127,7 @@ def test_exp():
     x2=sol.create_variable(5)
     f = np.exp(x1) + x2
     assert f.x == 6.0, "error with exp"
-    assert (f.dx == np.array([1., 1.])).all(), "error with exp"
+    assert (abs(f.dx - np.array([1., 1.]))<1e-6).all(), "error with exp"
 
 def test_log():
     sol=vt.Solver(2)
@@ -135,7 +135,7 @@ def test_log():
     x2=sol.create_variable(5)
     f = np.log(x1) + np.log(x2)
     assert f.x == 3.9120230054281464, "error with log"
-    assert (f.dx == np.array([0.1, 0.2])).all(), "error with log"
+    assert (abs(f.dx - np.array([0.1, 0.2]))<1e-6).all(), "error with log"
 
 def test_sin():
     sol=vt.Solver(2)
@@ -498,6 +498,12 @@ def test_get_diff_vector_to_vector():
         return [y*x.exponential(2), x*y.logistic()]
     dx=sol.get_diff(f,[5,2])
     assert ((dx-np.array([[2*22.18070977791825, 32],[0.8807971, 5*0.10499358540350652]]))<1e-5).all()
+    
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [x**y, y**x]
+    dx=sol.get_diff(f,[2,3])
+    assert ((dx-np.array([[12, 5.54517744],[9.8875106, 6]]))<1e-5).all()
 
 
 def test_get_diff_continuous_usage():
@@ -1066,6 +1072,12 @@ def testb_get_diff_vector_to_vector():
         return [y*x.exponential(2), x*y.logistic()]
     dx=sol.get_diff(f,[5,2],mode="backward")
     assert ((dx-np.array([[2*22.18070977791825, 32],[0.8807971, 5*0.10499358540350652]]))<1e-5).all()
+    
+    sol=vt.Solver(2)
+    def f(x,y):
+        return [x**y, y**x]
+    dx=sol.get_diff(f,[2,3],mode="backward")
+    assert ((dx-np.array([[12, 5.54517744],[9.8875106, 6]]))<1e-5).all()
 
 def testb_get_diff_continuous_usage():
     sol=vt.Solver(2)
